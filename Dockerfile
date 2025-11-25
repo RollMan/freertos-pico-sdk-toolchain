@@ -42,7 +42,14 @@ RUN curl -L -o - http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.28
 
 WORKDIR /toolchain-build
 ENV CT_ALLOW_BUILD_AS_ROOT_SURE=y CT_EXPERIMENTAL=y CT_ALLOW_BUILD_AS_ROOT=y
-RUN --mount=type=bind,source=./docker/arm-raspi-pico.config,target=/toolchain-build/.config \
+# Specify GCC/BINUTILS versions as new as possible.
+# binutils >= 2.44 won't compile pico-sdk 2.2.0.
+# Probably it is related to
+# https://community.arm.com/support-forums/f/compilers-and-libraries-forum/57077/binutils-2-44-and-gcc-15-1-0---dangerous-relocation-unsupported-relocation-error-when-trying-to-build-u-boot
+ARG CT_GCC_VERSION="15.2.0"
+ARG CT_BINUTILS_VERSION="2.43.1"
+RUN --mount=type=bind,source=./docker/arm-raspi-pico.config,target=/arm-raspi-pico.config,rw=true \
+    sed "s/{{CT_GCC_VERSION}}/${CT_GCC_VERSION}/g;s/{{CT_BINUTILS_VERSION}}/${CT_BINUTILS_VERSION}/g" /arm-raspi-pico.config > /toolchain-build/.config && \
     ct-ng build
 
 FROM debian:13.2 AS buildenv
@@ -63,6 +70,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 FROM buildenv AS pico-sdk
 WORKDIR /pico-sdk
-RUN --mount=type=bind,source=./contrib/pico-sdk,target=. \
+RUN --mount=type=bind,source=./contrib/pico-sdk,target=.,rw=true \
     cmake -S . -B build/ && \
     cmake --build build/
