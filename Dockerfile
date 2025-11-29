@@ -68,8 +68,12 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     ninja-build \
     ;
 
-FROM buildenv AS pico-sdk
+FROM buildenv AS pico-sdk-build
 WORKDIR /pico-sdk
 RUN --mount=type=bind,source=./contrib/pico-sdk,target=.,rw=true \
     cmake -S . -B build/ && \
-    cmake --build build/
+    make -C build/ -j$(nproc) && \
+    cp -r build/ /artifacts
+
+FROM pico-sdk-build AS build-sdk
+COPY --from=pico-sdk-build --link /artifacts /pico-sdk
