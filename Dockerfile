@@ -77,3 +77,11 @@ RUN --mount=type=bind,source=./contrib/pico-sdk,target=.,rw=true \
 
 FROM pico-sdk-build AS build-sdk
 COPY --from=pico-sdk-build --link /artifacts /pico-sdk
+
+FROM buildenv AS freertos
+WORKDIR /work
+ENV PICO_SDK_PATH="/work/contrib/pico-sdk"
+ENV FREERTOS_KERNEL_PATH="/work/contrib/FreeRTOS-Kernel"
+RUN --mount=type=bind,source=.,target=.,rw=true \
+    cmake -S . -B build/ && \
+    make -C build/ -j$(nproc)
