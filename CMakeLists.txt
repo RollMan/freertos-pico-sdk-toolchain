@@ -26,3 +26,7 @@ pico_async_context_freertos
 FreeRTOS-Kernel-Heap4
 )
 pico_add_extra_outputs(sample)
+
+# Add Firmata
+add_subdirectory(contrib/ConfigurableFirmata)
+target_link_libraries(sample Firmata)

@@ -4,3 +4,9 @@
 [submodule "contrib/FreeRTOS-Kernel"]
 	path = contrib/FreeRTOS-Kernel
 	url = git@github.com:FreeRTOS/FreeRTOS-Kernel.git
+[submodule "contrib/ConfigurableFirmata/ConfigurableFirmata"]
+	path = contrib/ConfigurableFirmata/ConfigurableFirmata
+	url = git@github.com:firmata/ConfigurableFirmata.git
+[submodule "contrib/arduino-pico"]
+	path = contrib/arduino-pico
+	url = git@github.com:earlephilhower/arduino-pico.git
