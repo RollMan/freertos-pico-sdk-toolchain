@@ -33,6 +33,8 @@
  * https://www.freertos.org/Documentation/01-FreeRTOS-quick-start/01-Beginners-guide/02-Quick-start-guide
  */
 
+#include "ir/ir.h"
+
 /* FreeRTOS includes. */
 #include <FreeRTOS.h>
 #include <task.h>
@@ -43,24 +45,6 @@
 /* Standard includes. */
 #include <stdio.h>
 
-/*-----------------------------------------------------------*/
-
-static void exampleTask( void * parameters ) __attribute__( ( noreturn ) );
-
-/*-----------------------------------------------------------*/
-
-static void exampleTask( void * parameters )
-{
-    /* Unused parameters. */
-    ( void ) parameters;
-
-    for( ; ; )
-    {
-        /* Example Task Code */
-        vTaskDelay( 100 ); /* delay 100 ticks */
-    }
-}
-/*-----------------------------------------------------------*/
 
 int main( void )
 {
@@ -69,8 +53,8 @@ int main( void )
 
     ( void ) printf( "Example FreeRTOS Project\n" );
 
-    ( void ) xTaskCreateStatic( exampleTask,
-                                "example",
+    ( void ) xTaskCreateStatic( start_send_ir_routine,
+                                "send_ir_task",
                                 configMINIMAL_STACK_SIZE,
                                 NULL,
                                 configMAX_PRIORITIES - 1U,

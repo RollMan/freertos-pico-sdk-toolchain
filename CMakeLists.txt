@@ -12,7 +12,7 @@ pico_sdk_init()
 # FREERTOS: include FreeRTOS Kernel libraries
 include(FreeRTOS_Kernel_import.cmake)
 # assuming you have a sample.c!
-add_executable(sample sample.c)
+add_executable(sample src/sample.c)
 # FREERTOS: FreeRTOSConfig.h needs to be in the include path
 target_include_directories(sample PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 # FREERTOS: Note, you should pick the FreeRTOS library that suits you best:
