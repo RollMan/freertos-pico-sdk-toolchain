@@ -48,6 +48,7 @@
 
 int main( void )
 {
+    QueueHandle_t IRSendQueue = xQueueCreate(1, 8);
     static StaticTask_t exampleTaskTCB;
     static StackType_t exampleTaskStack[ configMINIMAL_STACK_SIZE ];
 
