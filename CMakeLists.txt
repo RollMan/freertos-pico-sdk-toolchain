@@ -23,5 +23,6 @@ target_include_directories(sample PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(sample
 pico_stdlib
 FreeRTOS-Kernel-Heap4
+pico_async_context_freertos
 )
 pico_add_extra_outputs(sample)
