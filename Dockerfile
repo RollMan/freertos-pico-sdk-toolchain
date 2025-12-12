@@ -83,5 +83,6 @@ WORKDIR /work
 ENV PICO_SDK_PATH="/work/contrib/pico-sdk"
 ENV FREERTOS_KERNEL_PATH="/work/contrib/FreeRTOS-Kernel"
 RUN --mount=type=bind,source=.,target=.,rw=true \
-    cmake -S . -B build/ && \
+    --mount=type=cache,target=./build/ \
+    cmake -S . -B ./build/ && \
     make -C build/ -j$(nproc)
