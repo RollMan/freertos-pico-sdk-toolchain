@@ -19,19 +19,61 @@ RUN arduino-cli config set board_manager.additional_urls "https://github.com/ear
 FROM toolchain AS compile
 ARG SHOW_PROPERTIES=expanded
 WORKDIR /sample
+RUN mkdir /output
+# Actually run compilation and collect logs and object files.
+RUN --mount=type=bind,source=./arduino-pico_compile_flag_investigation/sample.ino,target=./sample.ino \
+    arduino-cli --log compile \
+    --build-path ./build \
+    --build-property compiler.c.extra_flags="-save-temps" \
+    --build-property compiler.cpp.extra_flags="-save-temps" \
+    --dump-profile \
+    --output-dir ./output/ \
+    --verbose \
+    -b rp2040:rp2040:rpipico \
+    . \
+    2>&1 | tee compile_log.txt \
+    && \
+    mkdir /output/compile_log && \
+    cp -r . /output/compile_log
+# Run a kind of ``inspect by `--preprocess`.
 RUN --mount=type=bind,source=./arduino-pico_compile_flag_investigation/sample.ino,target=./sample.ino \
     arduino-cli --log compile \
     --build-path ./build \
     --dump-profile \
+    --output-dir ./output/ \
     --preprocess \
-    --show-properties=${SHOW_PROPERTIES} \
     --verbose \
     -b rp2040:rp2040:rpipico \
     . \
-    2>&1 | tee stdouterr_${SHOW_PROPERTIES}.txt \
+    2>&1 | tee preprocess.txt \
     && \
-    mkdir /artifacts && \
-    cp -r . /artifacts
+    cp preprocess.txt  /output/
+
+# Run a kind of ``inspect by `--show-properties`.
+RUN --mount=type=bind,source=./arduino-pico_compile_flag_investigation/sample.ino,target=./sample.ino \
+    arduino-cli --log compile \
+    --build-path ./build \
+    --dump-profile \
+    --output-dir ./output/ \
+    --show-properties=expanded \
+    --verbose \
+    -b rp2040:rp2040:rpipico \
+    . \
+    2>&1 | tee properties_expanded.txt \
+    && \
+    cp properties_expanded.txt /output/
+RUN --mount=type=bind,source=./arduino-pico_compile_flag_investigation/sample.ino,target=./sample.ino \
+    arduino-cli --log compile \
+    --build-path ./build \
+    --dump-profile \
+    --output-dir ./output/ \
+    --show-properties=unexpanded \
+    --verbose \
+    -b rp2040:rp2040:rpipico \
+    . \
+    2>&1 | tee properties_unexpanded.txt \
+    && \
+    cp properties_unexpanded.txt /output/
 
 FROM scratch AS final
-COPY --from=compile /artifacts .
+COPY --from=compile /output .
