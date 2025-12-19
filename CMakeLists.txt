@@ -24,6 +24,7 @@ target_link_libraries(sample
 pico_stdlib
 pico_async_context_freertos
 FreeRTOS-Kernel-Heap4
+pico_async_context_freertos
 )
 pico_add_extra_outputs(sample)
 

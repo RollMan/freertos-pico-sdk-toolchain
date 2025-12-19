@@ -70,9 +70,8 @@
 #define configMESSAGE_BUFFER_LENGTH_TYPE        size_t
 
 /* Memory allocation related definitions. */
-#ifndef configSUPPORT_STATIC_ALLOCATION
-#define configSUPPORT_STATIC_ALLOCATION         0
-#endif
+/* Enable xTaskCreateStatic */
+#define configSUPPORT_STATIC_ALLOCATION         1
 #ifndef configSUPPORT_DYNAMIC_ALLOCATION
 #define configSUPPORT_DYNAMIC_ALLOCATION        1
 #endif
@@ -105,6 +104,8 @@
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY    [dependent on processor and application]
 #define configMAX_API_CALL_INTERRUPT_PRIORITY   [dependent on processor and application]
 */
+
+#define configKERNEL_PROVIDED_STATIC_MEMORY 1
 
 #if FREE_RTOS_KERNEL_SMP // set by the RP2xxx SMP port of FreeRTOS
 /* SMP port only */
