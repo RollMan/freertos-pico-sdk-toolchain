@@ -85,4 +85,4 @@ ENV FREERTOS_KERNEL_PATH="/work/contrib/FreeRTOS-Kernel"
 RUN --mount=type=bind,source=.,target=.,rw=true \
     --mount=type=cache,target=./build/ \
     cmake -S . -B ./build/ && \
-    make -C build/ -j$(nproc)
+    make -C build/ -j1 VERBOSE=1

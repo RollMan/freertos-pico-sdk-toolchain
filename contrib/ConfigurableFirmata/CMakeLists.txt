@@ -42,3 +42,115 @@ ConfigurableFirmata/src/utility/FirmataStepper.cpp
 ConfigurableFirmata/src/utility/BLEStream.cpp
 )
 target_include_directories(Firmata BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/ConfigurableFirmata/src ${CMAKE_CURRENT_SOURCE_DIR}/ConfigurableFirmata/src/utility)
+
+# Arduino-pico
+set(ARDUINO_PICO_PATH "${CMAKE_CURRENT_SOURCE_DIR}/arduino-pico")
+add_library(arduino-pico STATIC
+# All source files ends with `.cpp` in arduino-pico/core.
+# Recirsive glob without listing up all may work but leaves for now.
+${ARDUINO_PICO_PATH}/cores/rp2040/lwip_wrap.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/RP2040Support.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/stdlib_noniso.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/PIOProgram.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/FS.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/malloc-lock.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/api/PluggableUSB.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/api/IPAddress.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/api/String.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/api/Common.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/api/Print.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/api/Stream.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/SerialUART.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/SerialUSB.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/delay.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/USB.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/main.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/Tone.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/wiring_shift.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/posix.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/Bootsel.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/SerialPIO.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/WMath.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/wiring_digital.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/psram.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/StackThunk.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/wiring_analog.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/Semihosting.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/libb64/cdecode.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/libb64/cencode.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/BluetoothDebug.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/cyw43_wrappers.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/lock.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/wiring_private.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/CoreMutex.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/sdkoverride/btstack_flash_bank.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/sdkoverride/btstack_run_loop_async_context.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/sdkoverride/inet_chksum.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/wiring_pulse.cpp
+# TODO: Exclude FreeRTOS; use one at `contrib/FreeRTOS-Kernel.
+# Firmata does not need FreeRTOS.
+${ARDUINO_PICO_PATH}/cores/rp2040/freertos/freertos-main.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/freertos/freertos-lwip.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/freertos/variantHooks.cpp
+${ARDUINO_PICO_PATH}/cores/rp2040/_freertos.cpp
+)
+target_compile_options(arduino-pico
+PRIVATE
+-Werror=return-type
+-Wno-psabi
+-iprefix "${ARDUINO_PICO_PATH}/"
+@${ARDUINO_PICO_PATH}/lib/platform_def.txt
+@${ARDUINO_PICO_PATH}/lib/rp2040/platform_def.txt
+@${ARDUINO_PICO_PATH}/lib/rp2040/platform_inc.txt
+@${ARDUINO_PICO_PATH}/lib/core_inc.txt
+-march=armv6-m
+-mcpu=cortex-m0plus
+-mthumb
+-ffunction-sections
+-fdata-sections
+-fno-exceptions
+-fno-rtti
+-std=gnu++17
+-g
+-pipe
+-Os
+-v  # FIXME: verbose is not necessary after debug.
+-Wp,-v  # FIXME: verbose is not necessary after debug.
+@${ARDUINO_PICO_PATH}/lib/core_wrap.txt
+)
+
+add_compile_definitions(
+   USBD_PID=0x000a
+   USBD_VID=0x2e8a
+   USBD_MAX_POWER_MA=250
+   USB_MANUFACTURER="Raspberry Pi"
+   USB_PRODUCT="Pico"
+   LWIP_IPV6=0
+   LWIP_IPV4=1
+   LWIP_IGMP=1
+   LWIP_CHECKSUM_CTRL_PER_NETIF=1
+   FILE_COPY_CONSTRUCTOR_SELECT=FILE_COPY_CONSTRUCTOR_PUBLIC
+   USE_UTF8_LONG_NAMES=1
+   DISABLE_FS_H_WARNING=1
+   ARDUINO_VARIANT="rpipico"
+   PICO_FLASH_SIZE_BYTES=2097152
+   F_CPU=200000000L
+   ARDUINO=10607
+   ARDUINO_RASPBERRY_PI_PICO
+   BOARD_NAME=RASPBERRY_PI_PICO
+   ARDUINO_ARCH_RP2040
+   WIFICC=CYW43_COUNTRY_WORLDWIDE
+)
+
+target_include_directories(arduino-pico
+    PUBLIC ${ARDUINO_PICO_PATH}/include
+    PUBLIC ${ARDUINO_PICO_PATH}/cores/rp2040
+    PUBLIC ${ARDUINO_PICO_PATH}/variants/rpipico
+)
+
+
+
+#   "-MMD",
+#   "-iprefix/home/yshimmyo/.arduino15/packages/rp2040/hardware/rp2040/5.4.4/",
+target_link_libraries(arduino-pico pico_stdlib FreeRTOS-Kernel-Heap4)  # FIXME: linking pico-sdk is from root CMakeLists.txt.
+target_link_libraries(Firmata arduino-pico)
