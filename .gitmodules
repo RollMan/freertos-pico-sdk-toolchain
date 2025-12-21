@@ -7,6 +7,6 @@
 [submodule "contrib/ConfigurableFirmata/ConfigurableFirmata"]
 	path = contrib/ConfigurableFirmata/ConfigurableFirmata
 	url = git@github.com:firmata/ConfigurableFirmata.git
-[submodule "contrib/arduino-pico"]
+[submodule "contrib/ConfigurableFirmata/arduino-pico"]
 	path = contrib/ConfigurableFirmata/arduino-pico
 	url = git@github.com:earlephilhower/arduino-pico.git
