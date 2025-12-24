@@ -15,6 +15,7 @@ include(FreeRTOS_Kernel_import.cmake)
 add_executable(sample sample.c)
 # FREERTOS: FreeRTOSConfig.h needs to be in the include path
 target_include_directories(sample PRIVATE ${CMAKE_CURRENT_LIST_DIR})
+target_compile_definitions(sample PRIVATE USE_LED=1)
 # FREERTOS: Note, you should pick the FreeRTOS library that suits you best:
 #
 # FreeRTOS-Kernel-Heap1 thru FreeRTOS-Kernel_Heap4
