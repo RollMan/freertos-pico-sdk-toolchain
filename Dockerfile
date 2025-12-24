@@ -1,4 +1,4 @@
-FROM debian:13.2 AS toolchain
+FROM debian:13.2 AS crosstool_ng
 
 ENV DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -40,6 +40,7 @@ RUN curl -L -o - http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.28
     make -j`nproc` && \
     make install
 
+FROM crosstool_ng AS toolchain
 WORKDIR /toolchain-build
 ENV CT_ALLOW_BUILD_AS_ROOT_SURE=y CT_EXPERIMENTAL=y CT_ALLOW_BUILD_AS_ROOT=y
 # Specify GCC/BINUTILS versions as new as possible.
@@ -67,16 +68,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     meson \
     ninja-build \
     ;
-
-FROM buildenv AS pico-sdk-build
-WORKDIR /pico-sdk
-RUN --mount=type=bind,source=./contrib/pico-sdk,target=.,rw=true \
-    cmake -S . -B build/ && \
-    make -C build/ -j$(nproc) && \
-    cp -r build/ /artifacts
-
-FROM pico-sdk-build AS build-sdk
-COPY --from=pico-sdk-build --link /artifacts /pico-sdk
 
 FROM buildenv AS freertos
 WORKDIR /work
