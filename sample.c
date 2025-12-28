@@ -16,6 +16,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "src/firmata/firmata_task.h"
+
 // Which core to run on if configNUMBER_OF_CORES==1
 #ifndef RUN_FREE_RTOS_ON_CORE
 #define RUN_FREE_RTOS_ON_CORE 0
@@ -38,11 +40,13 @@
 #define MAIN_TASK_PRIORITY      ( tskIDLE_PRIORITY + 2UL )
 #define BLINK_TASK_PRIORITY     ( tskIDLE_PRIORITY + 1UL )
 #define WORKER_TASK_PRIORITY    ( tskIDLE_PRIORITY + 4UL )
+#define FIRMATA_TASK_PRIORITY    ( tskIDLE_PRIORITY + 8UL )
 
 // Stack sizes of our threads in words (4 bytes)
 #define MAIN_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
 #define BLINK_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
 #define WORKER_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
+#define FIRMATA_TASK_STACK_SIZE (configMINIMAL_STACK_SIZE + (configSTACK_DEPTH_TYPE) 16384) // MINIMAL + 64 kiB
 
 #include "pico/async_context_freertos.h"
 static async_context_freertos_t async_context_instance;
@@ -140,6 +144,17 @@ void main_task(__unused void *params) {
     xTaskCreate(blink_task, "BlinkThread", BLINK_TASK_STACK_SIZE, NULL, BLINK_TASK_PRIORITY, NULL);
 #endif // configSUPPORT_STATIC_ALLOCATION
 #endif // USE_LED
+
+    // start firmata listening
+#if configSUPPORT_STATIC_ALLOCATION
+    static StackType_t firmata_stack[FIRMATA_TASK_STACK_SIZE];
+    static StaticTask_t firmata_buf;
+    xTaskCreateStatic(firmata_task, "FirmataThread", FIRMATA_TASK_STACK_SIZE, NULL, FIRMATA_TASK_STACK_SIZE, firmata_stack, &firmata_buf);
+#else
+    static_assert(configSUPPORT_DYNAMIC_ALLOCATION, "");
+    xTaskCreate(firmata_task, "FirmataThread", FIRMATA_TASK_STACK_SIZE, NULL, FIRMATA_TASK_PRIORITY, NULL);
+#endif // configSUPPORT_STATIC_ALLOCATION
+
     int count = 0;
     while(true) {
 #if configNUMBER_OF_CORES > 1
