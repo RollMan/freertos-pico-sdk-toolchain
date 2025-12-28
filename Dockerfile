@@ -73,6 +73,7 @@ FROM buildenv AS freertos
 WORKDIR /work
 ENV PICO_SDK_PATH="/work/contrib/pico-sdk"
 ENV FREERTOS_KERNEL_PATH="/work/contrib/FreeRTOS-Kernel"
+ENV VERBOSE=1
 RUN --mount=type=bind,source=.,target=.,rw=true \
     --mount=type=cache,target=./build/ \
     cmake -S . -B ./build/ && \

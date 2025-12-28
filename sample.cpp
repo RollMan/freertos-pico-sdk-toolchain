@@ -194,6 +194,7 @@ void vLaunch( void) {
 int main( void )
 {
     stdio_init_all();
+    init_firmata();
 
     /* Configure the hardware ready to run the demo. */
     const char *rtos_name;
