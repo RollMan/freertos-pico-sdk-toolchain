@@ -10,7 +10,7 @@ void init_firmata(){
     // NOTE: may need initialization of a serial port.
     Firmata.begin(115200);  // TODO: variable baud rate
     Firmata.sendString(F("Booting device. Stand by..."));
-    Firmata.attach(SYSTEM_RESET, systemResetCallback());
+    Firmata.attach(SYSTEM_RESET, systemResetCallback);
     Firmata.parse(SYSTEM_RESET);
 }
 

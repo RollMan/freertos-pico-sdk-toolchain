@@ -158,6 +158,6 @@ target_include_directories(Firmata BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Con
 )
 
 target_compile_options(Firmata
-PRIVATE
+PUBLIC
 ${ARDUINO_CFLAGS}
 )
