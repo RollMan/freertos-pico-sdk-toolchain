@@ -9,10 +9,6 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 
-#ifdef CYW43_WL_GPIO_LED_PIN
-#include "pico/cyw43_arch.h"
-#endif
-
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -70,8 +66,6 @@ static async_context_t *create_async_context(void) {
 static void set_led(bool led_on) {
 #if defined PICO_DEFAULT_LED_PIN
     gpio_put(PICO_DEFAULT_LED_PIN, led_on);
-#elif defined(CYW43_WL_GPIO_LED_PIN)
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_on);
 #endif
 }
 
@@ -80,22 +74,17 @@ static void init_led(void) {
 #if defined PICO_DEFAULT_LED_PIN
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-#elif defined(CYW43_WL_GPIO_LED_PIN)
-    hard_assert(cyw43_arch_init() == PICO_OK);
-    set_led(false); // make sure cyw43 is started
 #endif
 }
 
 void blink_task(__unused void *params) {
     bool on = false;
-    printf("blink_task starts\n");
     init_led();
     while (true) {
 #if configNUMBER_OF_CORES > 1
         static int last_core_id = -1;
         if (portGET_CORE_ID() != last_core_id) {
             last_core_id = portGET_CORE_ID();
-            printf("blink task is on core %d\n", last_core_id);
         }
 #endif
         set_led(on);
@@ -118,12 +107,10 @@ void blink_task(__unused void *params) {
 static void do_work(async_context_t *context, async_at_time_worker_t *worker) {
     async_context_add_at_time_worker_in_ms(context, worker, 10000);
     static uint32_t count = 0;
-    printf("Hello from worker count=%u\n", count++);
 #if configNUMBER_OF_CORES > 1
         static int last_core_id = -1;
         if (portGET_CORE_ID() != last_core_id) {
             last_core_id = portGET_CORE_ID();
-            printf("worker is on core %d\n", last_core_id);
         }
 #endif
 }
@@ -161,10 +148,8 @@ void main_task(__unused void *params) {
         static int last_core_id = -1;
         if (portGET_CORE_ID() != last_core_id) {
             last_core_id = portGET_CORE_ID();
-            printf("main task is on core %d\n", last_core_id);
         }
 #endif
-        printf("Hello from main task count=%u\n", count++);
         vTaskDelay(3000);
     }
     async_context_deinit(context);
@@ -193,7 +178,6 @@ void vLaunch( void) {
 
 int main( void )
 {
-    stdio_init_all();
     init_firmata();
 
     /* Configure the hardware ready to run the demo. */
@@ -205,14 +189,11 @@ int main( void )
 #endif
 
 #if (configNUMBER_OF_CORES > 1)
-    printf("Starting %s on both cores:\n", rtos_name);
     vLaunch();
 #elif (RUN_FREE_RTOS_ON_CORE == 1 && configNUMBER_OF_CORES==1)
-    printf("Starting %s on core 1:\n", rtos_name);
     multicore_launch_core1(vLaunch);
     while (true);
 #else
-    printf("Starting %s on core 0:\n", rtos_name);
     vLaunch();
 #endif
     return 0;

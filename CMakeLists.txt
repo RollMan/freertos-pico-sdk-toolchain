@@ -31,7 +31,6 @@ add_compile_definitions(
    BOARD_NAME=RASPBERRY_PI_PICO
    ARDUINO_ARCH_RP2040
    WIFICC=CYW43_COUNTRY_WORLDWIDE
-   LIB_PICO_STDIO_UART=1
 )
 
 # FREERTOS: include FreeRTOS Kernel libraries
