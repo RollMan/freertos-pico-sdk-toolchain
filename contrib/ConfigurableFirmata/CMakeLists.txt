@@ -2,14 +2,17 @@
 
 # Arduino-pico
 set(ARDUINO_PICO_PATH "${CMAKE_CURRENT_SOURCE_DIR}/arduino-pico")
+set(ARDUINO_CFLAGS_PUBLIC
+-iprefix "${ARDUINO_PICO_PATH}/"
+@${ARDUINO_PICO_PATH}/lib/rp2040/platform_inc.txt
+@${ARDUINO_PICO_PATH}/lib/core_inc.txt
+)
 set(ARDUINO_CFLAGS
 -Werror=return-type
 -Wno-psabi
 -iprefix "${ARDUINO_PICO_PATH}/"
 @${ARDUINO_PICO_PATH}/lib/platform_def.txt
 @${ARDUINO_PICO_PATH}/lib/rp2040/platform_def.txt
-@${ARDUINO_PICO_PATH}/lib/rp2040/platform_inc.txt
-@${ARDUINO_PICO_PATH}/lib/core_inc.txt
 -march=armv6-m
 -mcpu=cortex-m0plus
 -mthumb
@@ -77,8 +80,8 @@ ${ARDUINO_PICO_PATH}/cores/rp2040/freertos/variantHooks.cpp
 ${ARDUINO_PICO_PATH}/cores/rp2040/_freertos.cpp
 )
 target_compile_options(arduino-pico
-PRIVATE
-${ARDUINO_CFLAGS}
+PRIVATE ${ARDUINO_CFLAGS}
+PUBLIC ${ARDUINO_CFLAGS_PUBLIC}
 )
 
 target_include_directories(arduino-pico
@@ -103,8 +106,8 @@ ${ARDUINO_PICO_PATH}/libraries/Wire/src/
     PUBLIC ${ARDUINO_PICO_PATH}/variants/rpipico
 )
 target_compile_options(wire
-PRIVATE
-${ARDUINO_CFLAGS}
+PRIVATE ${ARDUINO_CFLAGS}
+PUBLIC ${ARDUINO_CFLAGS_PUBLIC}
 )
 
 # Firmata
@@ -158,6 +161,9 @@ target_include_directories(Firmata BEFORE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Con
 )
 
 target_compile_options(Firmata
-PUBLIC
-${ARDUINO_CFLAGS}
+PRIVATE ${ARDUINO_CFLAGS}
+PUBLIC ${ARDUINO_CFLAGS_PUBLIC}
+)
+target_compile_definitions(Firmata
+PUBLIC TARGET_RASPBERRY_PI_PICO=1
 )
