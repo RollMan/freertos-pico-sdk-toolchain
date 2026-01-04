@@ -31,6 +31,7 @@ add_compile_definitions(
    BOARD_NAME=RASPBERRY_PI_PICO
    ARDUINO_ARCH_RP2040
    WIFICC=CYW43_COUNTRY_WORLDWIDE
+   LIB_PICO_STDIO_UART=1
 )
 
 # FREERTOS: include FreeRTOS Kernel libraries
@@ -42,22 +43,23 @@ src/firmata/firmata_task.cpp
 # FREERTOS: FreeRTOSConfig.h needs to be in the include path
 target_include_directories(sample PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_compile_definitions(sample PRIVATE USE_LED=1)
+
+# Add Firmata
+add_subdirectory(contrib/ConfigurableFirmata)
+
 # FREERTOS: Note, you should pick the FreeRTOS library that suits you best:
 #
 # FreeRTOS-Kernel-Heap1 thru FreeRTOS-Kernel_Heap4
 # or
 # FreeRTOS-Kernel-Static
 target_link_libraries(sample
-pico_stdlib
-pico_async_context_freertos
 FreeRTOS-Kernel-Heap4
 pico_async_context_freertos
-arduino-pico
 Firmata
 wire
+arduino-pico
+tinyusb_device
+tinyusb_board
+pico_stdlib
 )
 pico_add_extra_outputs(sample)
-
-# Add Firmata
-add_subdirectory(contrib/ConfigurableFirmata)
-target_link_libraries(sample Firmata)
