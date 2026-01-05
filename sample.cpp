@@ -14,6 +14,8 @@
 
 #include "src/firmata/firmata_task.h"
 
+#define PICO_DEFAULT_LED_PIN (25)
+
 // Which core to run on if configNUMBER_OF_CORES==1
 #ifndef RUN_FREE_RTOS_ON_CORE
 #define RUN_FREE_RTOS_ON_CORE 0
@@ -34,9 +36,9 @@
 
 // Priorities of our threads - higher numbers are higher priority
 #define MAIN_TASK_PRIORITY      ( tskIDLE_PRIORITY + 2UL )
-#define BLINK_TASK_PRIORITY     ( tskIDLE_PRIORITY + 1UL )
+#define BLINK_TASK_PRIORITY     ( tskIDLE_PRIORITY + 2UL )
 #define WORKER_TASK_PRIORITY    ( tskIDLE_PRIORITY + 4UL )
-#define FIRMATA_TASK_PRIORITY    ( tskIDLE_PRIORITY + 8UL )
+#define FIRMATA_TASK_PRIORITY    ( tskIDLE_PRIORITY + 1UL )
 
 // Stack sizes of our threads in words (4 bytes)
 #define MAIN_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
@@ -64,17 +66,13 @@ static async_context_t *create_async_context(void) {
 #if USE_LED
 // Turn led on or off
 static void set_led(bool led_on) {
-#if defined PICO_DEFAULT_LED_PIN
     gpio_put(PICO_DEFAULT_LED_PIN, led_on);
-#endif
 }
 
 // Initialise led
 static void init_led(void) {
-#if defined PICO_DEFAULT_LED_PIN
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-#endif
 }
 
 void blink_task(__unused void *params) {
@@ -178,7 +176,7 @@ void vLaunch( void) {
 
 int main( void )
 {
-    init_firmata();
+    // init_firmata();
 
     /* Configure the hardware ready to run the demo. */
     const char *rtos_name;
