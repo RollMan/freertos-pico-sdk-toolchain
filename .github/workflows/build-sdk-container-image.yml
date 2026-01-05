@@ -9,6 +9,8 @@ env:
   REGISTRY: ghcr.io
 jobs:
   build-and-push:
+    env:
+      IMAGE_NAME: toolchain
     runs-on: ubuntu-latest
     permissions:
       contents: read
