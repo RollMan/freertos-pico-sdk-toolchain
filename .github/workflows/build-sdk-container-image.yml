@@ -34,6 +34,7 @@ jobs:
     - name: Build and push the container
       uses: docker/build-push-action@v5
       with:
+        context: .
         push: true
         target: "buildenv"
         tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY_NAME_LC }}/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/${{ env.REPOSITORY_NAME_LC }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
