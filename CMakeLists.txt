@@ -9,6 +9,15 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 # Initialize the SDK
 pico_sdk_init()
+
+# Source - https://stackoverflow.com/a
+# Posted by Nimrod
+# Retrieved 2026-01-07, License - CC BY-SA 4.0
+# Debug: save intermediate files, especially preprocess result
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -save-temps=obj")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -save-temps=obj")
+
 # Arduino definitions
 add_compile_definitions(
    USBD_PID=0x000a
@@ -57,8 +66,10 @@ pico_async_context_freertos
 Firmata
 wire
 arduino-pico
-tinyusb_device
-tinyusb_board
 pico_stdlib
 )
+
+pico_enable_stdio_usb(sample 1)
+pico_enable_stdio_uart(sample 0)
+
 pico_add_extra_outputs(sample)
