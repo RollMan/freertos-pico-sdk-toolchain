@@ -1,14 +1,10 @@
 #include <Arduino.h>
-
+#include <ConfigurableFirmata.h>
+#include "src/firmata/firmata_task.h"
 void setup(void){
-    Serial.begin(9600);
-    Serial.println("Hi");
+    init_firmata();
 }
 
-int count=0;
 void loop(){
-        Serial.print("count ");
-        Serial.print(count);
-        Serial.print("\r\n");
-        count++;
+    firmata_task(NULL);
 }
