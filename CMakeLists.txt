@@ -18,6 +18,17 @@ pico_sdk_init()
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -save-temps=obj")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -save-temps=obj")
 
+# tinyusb interface
+add_library(tusb_config INTERFACE)
+target_include_directories(tusb_config INTERFACE
+    ${CMAKE_CURRENT_LIST_DIR}/contrib/ConfigurableFirmata/arduino-pico/include/
+)
+target_compile_definitions(tusb_config INTERFACE
+    PICO_TUSB_CONFIG_HEADER="tusb_config.h"
+)
+
+
+
 # Arduino definitions
 add_compile_definitions(
    USBD_PID=0x000a
@@ -61,15 +72,20 @@ add_subdirectory(contrib/ConfigurableFirmata)
 # or
 # FreeRTOS-Kernel-Static
 target_link_libraries(sample
+tusb_config
 FreeRTOS-Kernel-Heap4
 pico_async_context_freertos
 Firmata
 wire
 arduino-pico
+
+tinyusb_device
+tinyusb_board
+
 pico_stdlib
 )
 
-pico_enable_stdio_usb(sample 1)
+pico_enable_stdio_usb(sample 0)
 pico_enable_stdio_uart(sample 0)
 
 pico_add_extra_outputs(sample)

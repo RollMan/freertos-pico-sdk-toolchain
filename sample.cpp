@@ -1,13 +1,14 @@
-#include <stdio.h>
-#include <pico/stdlib.h>
-int main(void){
-    stdio_init_all();
-    printf("Hello\n");
+#include <Arduino.h>
 
-    int count=0;
-    while(true){
-        printf("count %d\n", count);
+void setup(void){
+    Serial.begin(9600);
+    Serial.println("Hi");
+}
+
+int count=0;
+void loop(){
+        Serial.print("count ");
+        Serial.print(count);
+        Serial.print("\r\n");
         count++;
-    }
-    return 0;
 }
