@@ -1,8 +1,25 @@
 #include "firmata_task.h"
 #include <ConfigurableFirmata.h>
 
+#include <DigitalOutputFirmata.h>
+DigitalOutputFirmata digitalOutput;
+
+#include <FirmataExt.h>
+FirmataExt firmataExt;
+
 void systemResetCallback(){
-    // Do nothing until FirmataExt is used.
+	for (byte i = 0; i < TOTAL_PINS; i++) 
+	{
+		if (FIRMATA_IS_PIN_ANALOG(i)) 
+		{
+			Firmata.setPinMode(i, PIN_MODE_ANALOG);
+		} 
+		else if (IS_PIN_DIGITAL(i)) 
+		{
+			Firmata.setPinMode  (i, PIN_MODE_OUTPUT);
+		}
+	}
+	firmataExt.reset();
 }
 
 void init_firmata(){
@@ -10,8 +27,10 @@ void init_firmata(){
     // NOTE: may need initialization of a serial port.
     Firmata.begin(115200);  // TODO: variable baud rate
     Firmata.sendString(F("Booting device. Stand by..."));
+    firmataExt.addFeature(digitalOutput);
     Firmata.attach(SYSTEM_RESET, systemResetCallback);
     Firmata.parse(SYSTEM_RESET);
+    Firmata.sendString(F("Firmata initialized."));
 }
 
 void firmata_task(void *params __attribute__((unused))){
