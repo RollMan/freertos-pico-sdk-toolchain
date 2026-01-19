@@ -74,10 +74,10 @@ ${ARDUINO_PICO_PATH}/cores/rp2040/sdkoverride/inet_chksum.cpp
 ${ARDUINO_PICO_PATH}/cores/rp2040/wiring_pulse.cpp
 # TODO: Exclude FreeRTOS; use one at `contrib/FreeRTOS-Kernel.
 # Firmata does not need FreeRTOS.
-${ARDUINO_PICO_PATH}/cores/rp2040/freertos/freertos-main.cpp
-${ARDUINO_PICO_PATH}/cores/rp2040/freertos/freertos-lwip.cpp
-${ARDUINO_PICO_PATH}/cores/rp2040/freertos/variantHooks.cpp
-${ARDUINO_PICO_PATH}/cores/rp2040/_freertos.cpp
+# ${ARDUINO_PICO_PATH}/cores/rp2040/freertos/freertos-main.cpp
+# ${ARDUINO_PICO_PATH}/cores/rp2040/freertos/freertos-lwip.cpp
+# ${ARDUINO_PICO_PATH}/cores/rp2040/freertos/variantHooks.cpp
+# ${ARDUINO_PICO_PATH}/cores/rp2040/_freertos.cpp
 )
 target_compile_options(arduino-pico
 PRIVATE ${ARDUINO_CFLAGS}
