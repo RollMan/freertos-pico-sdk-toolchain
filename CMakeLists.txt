@@ -58,6 +58,7 @@ include(FreeRTOS_Kernel_import.cmake)
 add_executable(sample
 sample.cpp
 src/firmata/firmata_task.cpp
+src/firmata/custom_command_trial.cpp
 )
 # FREERTOS: FreeRTOSConfig.h needs to be in the include path
 target_include_directories(sample PRIVATE ${CMAKE_CURRENT_LIST_DIR})

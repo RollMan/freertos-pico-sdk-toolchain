@@ -1,5 +1,7 @@
-#include "firmata_task.h"
+#include "./firmata_task.h"
 #include <ConfigurableFirmata.h>
+#include "./custom_command_trial.h"
+FirmataCustomCommandTestToServer custom_command_test_toserver;
 
 #include <DigitalOutputFirmata.h>
 DigitalOutputFirmata digitalOutput;
@@ -28,6 +30,7 @@ void init_firmata(){
     Firmata.begin(115200);  // TODO: variable baud rate
     Firmata.sendString(F("Booting device. Stand by..."));
     firmataExt.addFeature(digitalOutput);
+    firmataExt.addFeature(custom_command_test_toserver);
     Firmata.attach(SYSTEM_RESET, systemResetCallback);
     Firmata.parse(SYSTEM_RESET);
     Firmata.sendString(F("Firmata initialized."));
