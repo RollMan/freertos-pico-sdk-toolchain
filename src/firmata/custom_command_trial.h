@@ -4,8 +4,8 @@
 #include <ConfigurableFirmata.h>
 #include <FirmataFeature.h>
 
-#define CUSTOM_COMMAND_TOSERVER (0x0E)
-#define CUSTOM_COMMAND_TOCLIENT (0x0F)
+#define CUSTOM_COMMAND_TOCLIENT (0x0E)
+#define CUSTOM_COMMAND_TOSERVER (0x0F)
 
 class FirmataCustomCommandTestToServer: public FirmataFeature
 {
@@ -17,6 +17,8 @@ class FirmataCustomCommandTestToServer: public FirmataFeature
         boolean handleSysex(byte command, byte argc, byte* argv);
         boolean handlePinMode(byte pin, int mode);
         void reset();
+    private:
+        void write_data(void);
 };
 
 #endif
